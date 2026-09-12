@@ -3,9 +3,7 @@ Lab 1.
 
 Language detection
 """
-# 07.09.2026
 # pylint:disable=unused-argument
-import re
 from typing import Sequence
 
 FreqDictType = dict[str, float]
@@ -29,10 +27,23 @@ def tokenize(text: str) -> Sequence[str] | None:
     """
     if not isinstance(text, str):
         return None
-    else:
-        text = text.lower()
-        tokens = re.findall (r"\w+", text)
-        return tokens
+
+    text = text.lower()
+    tokens = []
+    token = ""
+
+    for char in text:
+        if char.isalnum():
+            token += char
+        else:
+            if token:
+                tokens.append(token)
+                token = ""
+
+    if token:
+        tokens.append(token)
+
+    return tokens
     
 
 def remove_stop_words(tokens: Sequence[str], stop_words: Sequence[str]) -> Sequence[str] | None:
