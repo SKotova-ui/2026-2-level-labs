@@ -33,7 +33,7 @@ def tokenize(text: str) -> Sequence[str] | None:
     token = ""
 
     for char in text:
-        if char.isalnum():
+        if char.isalpha():
             token += char
         else:
             if token:
