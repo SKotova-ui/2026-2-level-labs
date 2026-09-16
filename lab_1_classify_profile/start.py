@@ -18,6 +18,8 @@ def main() -> None:
         stopwords = file.read().split("\n")
     with open("lab_1_classify_profile/assets/texts/en.txt", "r", encoding="utf-8") as file:
         en_text = file.read()
+    result = None
+    assert result, "Detection result is None"
 
 if __name__ == "__main__":
     main()
