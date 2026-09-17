@@ -21,6 +21,7 @@ def main() -> None:
     result = None
     assert result, "Detection result is None"
 
+
 if __name__ == "__main__":
     main()
 
