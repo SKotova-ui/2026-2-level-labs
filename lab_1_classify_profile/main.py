@@ -76,20 +76,24 @@ def calculate_frequencies(tokens: Sequence[str]) -> dict[str, float] | None:
     if not isinstance(tokens, Sequence):
         return None
 
-    dict = {}
+    frequencies = {}
     total = len(tokens)
 
     for token in tokens:
-        if token not in dict:
-            dict[token] = 1
+        if token in frequencies:
+            frequencies[token] += 1
         else:
-            dict[token] += 1
+            frequencies[token] = 1
 
-    for token in dict:
-        dict[token] = dict[token] / total
+    for token in frequencies:
+        frequencies[token] /= total
 
-    return dict
-
+    return dict(
+        sorted(
+            frequencies.items(),
+            key=lambda item: -item[1]
+        )
+    )
 
 def get_top_n_words(freq_dict: dict[str, float], top_n: int) -> Sequence[str] | None:
     """
