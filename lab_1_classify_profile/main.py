@@ -193,6 +193,27 @@ def compare_profiles_by_top_n(
         float | None: The distance between profiles.
         Returns None in case of incorrect input types.
     """
+    if not check_profile(unknown_profile) or not check_profile(profile_to_compare):
+        return None
+
+    if not isinstance(top_n, int) or top_n <= 0:
+        return None
+
+    unknown_top = get_top_n_words(unknown_profile[1], top_n)
+    compare_top = get_top_n_words(profile_to_compare[1], top_n)
+
+    if unknown_top is None or compare_top is None:
+        return None
+
+    all_words = set(unknown_top) | set(compare_top)
+    freq_difference = 0.0
+
+    for word in all_words:
+        freq_unknown = unknown_profile[1].get(word, 0.0)
+        freq_compare = profile_to_compare[1].get(word, 0.0)
+        freq_difference += abs(freq_unknown - freq_compare)
+
+    return freq_difference
 
 
 def detect_language_by_top_n(
@@ -211,6 +232,21 @@ def detect_language_by_top_n(
         str | None: Unknown profile language.
         Returns None in case of incorrect input types.
     """
+    if not check_profile(unknown_profile) or not check_profile(profile_1) or not check_profile(profile_2):
+        return None
+
+    if not isinstance(top_n, int) or top_n <= 0:
+        return None
+
+    freq_difference_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
+    freq_difference_2 = compare_profiles_by_top_n(unknown_profile, profile_2, top_n)
+
+    if freq_difference_1 is None or freq_difference_2 is None:
+        return None
+
+    if freq_difference_1 <= freq_difference_2:
+        return profile_1[0]
+    return profile_2[0]
 
 
 # Mark 8
