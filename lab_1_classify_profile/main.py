@@ -35,10 +35,10 @@ def tokenize(text: str) -> Sequence[str] | None:
     for char in text:
         if char.isalpha():
             token += char
-        elif token:
-            tokens.append(token)
-            token = ""
-
+        elif char.isspace() or char in ".,!?()[]{}<>«»—–-":
+            if token:
+                tokens.append(token)
+                token = ""
     if token:
         tokens.append(token)
 
@@ -56,7 +56,13 @@ def remove_stop_words(tokens: Sequence[str], stop_words: Sequence[str]) -> Seque
         Sequence[str] | None: Sequence of tokens without stop words.
         Returns None in case of incorrect input types.
     """
-    if not isinstance(tokens, str) or not isinstance(stop_words, str):
+    if not isinstance(tokens, Sequence) or not isinstance(stop_words, Sequence):
+        return None
+
+    if not all(isinstance(token, str) for token in tokens):
+        return None
+
+    if not all(isinstance(stop_word, str) for stop_word in stop_words):
         return None
 
     return [token for token in tokens if token not in stop_words]
@@ -72,7 +78,7 @@ def calculate_frequencies(tokens: Sequence[str]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with frequencies.
         Returns None in case of incorrect input types.
     """
-    if not isinstance(tokens, Sequence):
+    if not isinstance(tokens, Sequence) or not isinstance(tokens, str):
         return None
 
     if not tokens:
