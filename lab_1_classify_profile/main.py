@@ -75,22 +75,21 @@ def calculate_frequencies(tokens: Sequence[str]) -> dict[str, float] | None:
     if not isinstance(tokens, Sequence):
         return None
 
+    if not tokens:
+        return {}
+
     frequencies = {}
     total = len(tokens)
 
     for token in tokens:
-        if token in frequencies:
-            frequencies[token] += 1
+        if token not in frequencies:
+            frequencies[token] = 0
+        frequencies[token] += 1
 
     for token in frequencies:
-        frequencies[token] /= total
+        frequencies[token] = frequencies[token] / total
 
-    return dict(
-        sorted(
-            frequencies.items(),
-            key=lambda item: -item[1]
-        )
-    )
+    return frequencies
 
 def get_top_n_words(freq_dict: dict[str, float], top_n: int) -> Sequence[str] | None:
     """
@@ -265,6 +264,22 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
         Returns None in case of incorrect input types or mismatched length.
         In case of empty inputs, returns 0.0.
     """
+    if not isinstance(predicted, Sequence) or not isinstance(actual, Sequence):
+        return None
+
+    if len(predicted) != len(actual):
+        return None
+
+    if len(predicted) == 0:
+        return 0.0
+
+    mse = 0.0
+    for pred, act in zip(predicted, actual):
+        if not isinstance(pred, (int, float)) or not isinstance(act, (int, float)):
+            return None
+        mse += (pred - act) ** 2
+
+    return mse / len(predicted)
 
 
 def compare_profiles_by_mse(
@@ -282,6 +297,18 @@ def compare_profiles_by_mse(
         float | None: The distance between the profiles.
         In case of corrupt input arguments or invalid profile structure, None is returned.
     """
+    if not check_profile(unknown_profile) or not check_profile(profile_to_compare):
+        return None
+
+    unknown_freq = unknown_profile[1]
+    compare_freq = profile_to_compare[1]
+
+    all_words = sorted(set(unknown_freq.keys()) | set(compare_freq.keys()))
+
+    predicted = [unknown_freq.get(word, 0.0) for word in all_words]
+    actual = [compare_freq.get(word, 0.0) for word in all_words]
+
+    return calculate_mse(predicted, actual)
 
 
 def detect_language_by_mse(
@@ -300,6 +327,18 @@ def detect_language_by_mse(
         str | None: Unknown profile language.
         Returns None in case of incorrect input types.
     """
+    if not check_profile(unknown_profile) or not check_profile(profile_1) or not check_profile(profile_2):
+        return None
+
+    mse_1 = compare_profiles_by_mse(unknown_profile, profile_1)
+    mse_2 = compare_profiles_by_mse(unknown_profile, profile_2)
+
+    if mse_1 is None or mse_2 is None:
+        return None
+
+    if mse_1 <= mse_2:
+        return profile_1[0]
+    return profile_2[0]
 
 
 # Mark 10
