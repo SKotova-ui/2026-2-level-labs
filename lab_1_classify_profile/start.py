@@ -4,12 +4,16 @@ Language detection starter.
 
 # pylint: disable=unused-variable, duplicate-code
 
-from main import tokenize, remove_stop_words, calculate_frequencies, get_top_n_words, create_language_profile, check_profile, compare_profiles_by_top_n, detect_language_by_top_n, calculate_mse, compare_profiles_by_mse, detect_language_by_mse
-
 def main() -> None:
     """
     Launches an implementation.
     """
+    from main import (
+        tokenize,
+        remove_stop_words,
+        calculate_frequencies,
+        get_top_n_words
+    )
     with open("lab_1_classify_profile/assets/texts/de.txt", "r", encoding="utf-8") as file:
         de_text = file.read()
     with open("lab_1_classify_profile/assets/texts/unknown.txt", "r", encoding="utf-8") as file:
@@ -18,7 +22,10 @@ def main() -> None:
         stopwords = file.read().split("\n")
     with open("lab_1_classify_profile/assets/texts/en.txt", "r", encoding="utf-8") as file:
         en_text = file.read()
-    result = None
+    tokens = tokenize(de_text)
+    clean_text = remove_stop_words(tokens)
+    freq_dict = calculate_frequencies(clean_text)
+    result = get_top_n_words(freq_dict, 7)
     assert result, "Detection result is None"
 
 
