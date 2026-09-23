@@ -185,10 +185,13 @@ def check_profile(profile: ProfileType) -> bool:
 
     language, freq_dict, n_words = profile
 
-    if not isinstance(language, str) or not isinstance(freq_dict, dict) or not isinstance(n_words, int):
+    if not isinstance(language, str):
         return False
 
-    if n_words != len(freq_dict):
+    if not isinstance(freq_dict, dict):
+        return False
+
+    if not isinstance(n_words, int):
         return False
 
     for token, frequency in freq_dict.items():
@@ -225,13 +228,13 @@ def compare_profiles_by_top_n(
     if unknown_top is None or compare_top is None:
         return None
 
-    all_words = set(unknown_top) | set(compare_top)
-    freq_difference = 0.0
+    same_words = 0
 
-    for word in all_words:
-        freq_unknown = unknown_profile[1].get(word, 0.0)
-        freq_compare = profile_to_compare[1].get(word, 0.0)
-        freq_difference += abs(freq_unknown - freq_compare)
+    for word in unknown_top:
+        if word in compare_top:
+            same_words += 1
+
+    freq_difference = same_words / top_n
 
     return freq_difference
 
@@ -264,10 +267,13 @@ def detect_language_by_top_n(
     if freq_difference_1 is None or freq_difference_2 is None:
         return None
 
-    if freq_difference_1 <= freq_difference_2:
+    if freq_difference_1 > freq_difference_2:
+        return profile_1[0]
+    if freq_difference_1 < freq_difference_2:
+        return profile_2[0]
+    if profile_1[0] < profile_2[0]:
         return profile_1[0]
     return profile_2[0]
-
 
 # Mark 8
 
@@ -357,9 +363,11 @@ def detect_language_by_mse(
     if mse_1 is None or mse_2 is None:
         return None
 
-    if mse_1 <= mse_2:
+    if mse_1 < mse_2:
         return profile_1[0]
-    return profile_2[0]
+    if mse_1 > mse_2:
+        return profile_2[0]
+    return min(profile_1[0], profile_2[0])
 
 
 # Mark 10
