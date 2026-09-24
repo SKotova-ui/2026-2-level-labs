@@ -143,16 +143,14 @@ def create_language_profile(
         ProfileType | None: Language profile.
         Returns None in case of incorrect input types.
     """
-    if not isinstance(language, str):
-        return None
+    valid = (
+        isinstance(language, str)
+        and isinstance(text, str)
+        and isinstance(stop_words, Sequence)
+        and all(isinstance(word, str) for word in stop_words)
+    )
 
-    if not isinstance(text, str):
-        return None
-
-    if not isinstance(stop_words, Sequence):
-        return None
-
-    if not all(isinstance(word, str) for word in stop_words):
+    if not valid:
         return None
 
     tokens = tokenize(text)
@@ -185,22 +183,17 @@ def check_profile(profile: ProfileType) -> bool:
 
     language, freq_dict, n_words = profile
 
-    if not isinstance(language, str):
-        return False
+    valid = (
+        isinstance(language, str)
+        and isinstance(freq_dict, dict)
+        and isinstance(n_words, int)
+        and all(
+            isinstance(token, str) and isinstance(frequency, float)
+            for token, frequency in freq_dict.items()
+        )
+    )
 
-    if not isinstance(freq_dict, dict):
-        return False
-
-    if not isinstance(n_words, int):
-        return False
-
-    for token, frequency in freq_dict.items():
-        if not isinstance(token, str):
-            return False
-        if not isinstance(frequency, float):
-            return False
-
-    return True
+    return valid
 
 def compare_profiles_by_top_n(
     unknown_profile: ProfileType, profile_to_compare: ProfileType, top_n: int
@@ -255,16 +248,15 @@ def detect_language_by_top_n(
         str | None: Unknown profile language.
         Returns None in case of incorrect input types.
     """
-    if not check_profile(unknown_profile):
-        return None
+    valid = (
+        check_profile(unknown_profile)
+        and check_profile(profile_1)
+        and check_profile(profile_2)
+        and isinstance(top_n, int)
+        and top_n > 0
+    )
 
-    if not check_profile(profile_1):
-        return None
-
-    if not check_profile(profile_2):
-        return None
-
-    if not isinstance(top_n, int) or top_n <= 0:
+    if not valid:
         return None
 
     freq_difference_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
@@ -360,13 +352,13 @@ def detect_language_by_mse(
         str | None: Unknown profile language.
         Returns None in case of incorrect input types.
     """
-    if not check_profile(unknown_profile):
-        return None
+    valid = (
+        check_profile(unknown_profile)
+        and check_profile(profile_1)
+        and check_profile(profile_2)
+    )
 
-    if not check_profile(profile_1):
-        return None
-
-    if not check_profile(profile_2):
+    if not valid:
         return None
 
     mse_1 = compare_profiles_by_mse(unknown_profile, profile_1)
