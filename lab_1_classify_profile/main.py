@@ -87,7 +87,7 @@ def calculate_frequencies(tokens: Sequence[str]) -> dict[str, float] | None:
     if not tokens:
         return {}
 
-    frequencies = {}
+    frequencies: dict[str, float] = {}
     total = len(tokens)
 
     for token in tokens:
