@@ -8,19 +8,7 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    from lab_1_classify_profile.main import (
-        calculate_frequencies,
-        calculate_mse,
-        check_profile,
-        compare_profiles_by_mse,
-        compare_profiles_by_top_n,
-        create_language_profile,
-        detect_language_by_top_n,
-        detect_language_by_mse,
-        get_top_n_words,
-        remove_stop_words,
-        tokenize,
-    )
+    from lab_1_classify_profile.main import create_language_profile, detect_language_by_mse
 
     with open("lab_1_classify_profile/assets/texts/de.txt", "r", encoding="utf-8") as file:
         de_text = file.read()
@@ -30,13 +18,15 @@ def main() -> None:
         stopwords = file.read().split("\n")
     with open("lab_1_classify_profile/assets/texts/en.txt", "r", encoding="utf-8") as file:
         en_text = file.read()
-    tokens = tokenize(de_text)
-    clean_text = remove_stop_words(tokens, stopwords)
-    freq_dict = calculate_frequencies(clean_text)
-    result = get_top_n_words(freq_dict, 7)
+    de_prof = create_language_profile("de", de_text, stopwords)
+    en_prof = create_language_profile("en", en_text, stopwords)
+    unknown_prof = create_language_profile("en", unknown_text, stopwords)
+    if de_prof is None or en_prof is None or unknown_prof is None:
+        return None
+    result = detect_language_by_mse(
+        unknown_prof, en_prof, de_prof)
     assert result, "Detection result is None"
+
 
 if __name__ == "__main__":
     main()
-
-

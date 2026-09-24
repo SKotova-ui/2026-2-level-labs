@@ -295,15 +295,16 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
     if len(predicted) != len(actual):
         return None
 
-    if len(predicted) == 0:
+    if predicted == [] or actual == []:
         return 0.0
 
     mse = 0.0
-    for pred, act in zip(predicted, actual):
-        if not isinstance(pred, (int, float)) or not isinstance(act, (int, float)):
-            return None
-        mse += (pred - act) ** 2
 
+    for pred, act in zip(predicted, actual):
+        if not isinstance(pred, (float)) or not isinstance(act, ( float)):
+            return None
+
+    mse = sum(predicted[i] - actual[i] for i in range(len(predicted)))
     return mse / len(predicted)
 
 
