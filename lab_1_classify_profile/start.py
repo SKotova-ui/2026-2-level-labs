@@ -8,7 +8,7 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    from main import (
+    from lab_1_classify_profile.main import (
         calculate_frequencies,
         calculate_mse,
         check_profile,
