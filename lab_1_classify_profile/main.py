@@ -154,15 +154,15 @@ def create_language_profile(
         return None
 
     tokens = tokenize(text)
-    if tokens is None:
+    if not tokens:
         return None
 
     filtered_tokens = remove_stop_words(tokens, stop_words)
-    if filtered_tokens is None:
+    if not filtered_tokens:
         return None
 
     freq_dict = calculate_frequencies(filtered_tokens)
-    if freq_dict is None:
+    if not freq_dict:
         return None
 
     return language, freq_dict, len(freq_dict)
@@ -183,7 +183,7 @@ def check_profile(profile: ProfileType) -> bool:
 
     language, freq_dict, n_words = profile
 
-    valid = (
+    return (
         isinstance(language, str)
         and isinstance(freq_dict, dict)
         and isinstance(n_words, int)
@@ -192,8 +192,6 @@ def check_profile(profile: ProfileType) -> bool:
             for token, frequency in freq_dict.items()
         )
     )
-
-    return valid
 
 def compare_profiles_by_top_n(
     unknown_profile: ProfileType, profile_to_compare: ProfileType, top_n: int
@@ -227,9 +225,7 @@ def compare_profiles_by_top_n(
         if word in compare_top:
             same_words += 1
 
-    freq_difference = same_words / top_n
-
-    return freq_difference
+    return same_words / top_n
 
 
 def detect_language_by_top_n(
@@ -248,16 +244,14 @@ def detect_language_by_top_n(
         str | None: Unknown profile language.
         Returns None in case of incorrect input types.
     """
-    valid = (
+    if not (
         check_profile(unknown_profile)
         and check_profile(profile_1)
         and check_profile(profile_2)
         and isinstance(top_n, int)
         and top_n > 0
-    )
-
-    if not valid:
-        return None
+    ):
+       return None
 
     freq_difference_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
     freq_difference_2 = compare_profiles_by_top_n(unknown_profile, profile_2, top_n)
@@ -298,14 +292,11 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
     if predicted == [] or actual == []:
         return 0.0
 
-    mse = 0.0
-
     for pred, act in zip(predicted, actual):
         if not isinstance(pred, (float)) or not isinstance(act, ( float)):
             return None
 
-    mse = sum(predicted[i] - actual[i] for i in range(len(predicted)))
-    return mse / len(predicted)
+    return float(sum(predicted[i] - actual[i] for i in range(len(predicted))) / len(predicted))
 
 
 def compare_profiles_by_mse(
@@ -331,8 +322,9 @@ def compare_profiles_by_mse(
 
     all_words = sorted(set(unknown_freq.keys()) | set(compare_freq.keys()))
 
-    predicted = [unknown_freq.get(word, 0.0) for word in all_words]
-    actual = [compare_freq.get(word, 0.0) for word in all_words]
+    for word in all_words:
+        predicted = [unknown_freq.get(word, 0.0)]
+        actual = [compare_freq.get(word, 0.0)]
 
     return calculate_mse(predicted, actual)
 
