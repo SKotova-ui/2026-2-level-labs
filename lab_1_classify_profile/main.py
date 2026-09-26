@@ -251,7 +251,7 @@ def detect_language_by_top_n(
         and isinstance(top_n, int)
         and top_n > 0
     ):
-       return None
+        return None
 
     freq_difference_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
     freq_difference_2 = compare_profiles_by_top_n(unknown_profile, profile_2, top_n)
@@ -296,7 +296,7 @@ def calculate_mse(predicted: Sequence[float], actual: Sequence[float]) -> float 
         if not isinstance(pred, (float)) or not isinstance(act, ( float)):
             return None
 
-    return float(sum(predicted[i] - actual[i] for i in range(len(predicted))) / len(predicted))
+    return sum((p - a) ** 2 for p, a in zip(predicted, actual)) / len(predicted)
 
 
 def compare_profiles_by_mse(
@@ -322,9 +322,11 @@ def compare_profiles_by_mse(
 
     all_words = sorted(set(unknown_freq.keys()) | set(compare_freq.keys()))
 
+    predicted = []
+    actual = []
     for word in all_words:
-        predicted = [unknown_freq.get(word, 0.0)]
-        actual = [compare_freq.get(word, 0.0)]
+        predicted.append(unknown_freq.get(word, 0.0))
+        actual.append(compare_freq.get(word, 0.0))
 
     return calculate_mse(predicted, actual)
 
