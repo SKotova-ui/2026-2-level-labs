@@ -262,9 +262,7 @@ def detect_language_by_top_n(
         return profile_1[0]
     if coincide_coeff_1 < coincide_coeff_2:
         return profile_2[0]
-    if profile_1[0] < profile_2[0]:
-        return profile_1[0]
-    return profile_2[0]
+    return min(profile_1[0], profile_2[0])
 
 # Mark 8
 
