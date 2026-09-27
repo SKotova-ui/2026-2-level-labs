@@ -445,5 +445,3 @@ def print_report(
 
     In case of incorrect type inputs, does not print anything.
     """
-print(tokenize("THE WORLD REVOLVING"))
-print(tokenize("THE WORLD REVOLVING."))
