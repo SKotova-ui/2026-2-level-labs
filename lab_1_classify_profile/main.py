@@ -143,14 +143,12 @@ def create_language_profile(
         ProfileType | None: Language profile.
         Returns None in case of incorrect input types.
     """
-    valid = (
+    if not (
         isinstance(language, str)
         and isinstance(text, str)
         and isinstance(stop_words, Sequence)
         and all(isinstance(word, str) for word in stop_words)
-    )
-
-    if not valid:
+    ):
         return None
 
     tokens = tokenize(text)
@@ -166,6 +164,7 @@ def create_language_profile(
         return None
 
     return language, freq_dict, len(freq_dict)
+
 
 def check_profile(profile: ProfileType) -> bool:
     """
@@ -253,15 +252,15 @@ def detect_language_by_top_n(
     ):
         return None
 
-    freq_difference_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
-    freq_difference_2 = compare_profiles_by_top_n(unknown_profile, profile_2, top_n)
+    coincide_coeff_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
+    coincide_coeff_2 = compare_profiles_by_top_n(unknown_profile, profile_2, top_n)
 
-    if freq_difference_1 is None or freq_difference_2 is None:
+    if coincide_coeff_1 is None or coincide_coeff_2 is None:
         return None
 
-    if freq_difference_1 > freq_difference_2:
+    if coincide_coeff_1 > coincide_coeff_2:
         return profile_1[0]
-    if freq_difference_1 < freq_difference_2:
+    if coincide_coeff_1 < coincide_coeff_2:
         return profile_2[0]
     if profile_1[0] < profile_2[0]:
         return profile_1[0]
@@ -446,3 +445,5 @@ def print_report(
 
     In case of incorrect type inputs, does not print anything.
     """
+print(tokenize("THE WORLD REVOLVING"))
+print(tokenize("THE WORLD REVOLVING."))
