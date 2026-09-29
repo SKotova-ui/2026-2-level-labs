@@ -3,6 +3,7 @@ Lab 1.
 
 Language detection
 """
+
 # pylint:disable=unused-argument
 import json
 import re
@@ -87,24 +88,6 @@ def calculate_frequencies(tokens: Sequence[str]) -> dict[str, float] | None:
 
     return frequency
 
-    if not all(isinstance(token, str) for token in tokens):
-        return None
-
-    if not tokens:
-        return {}
-
-    frequencies: dict[str, float] = {}
-    total = len(tokens)
-
-    for token in tokens:
-        if token not in frequencies:
-            frequencies[token] = 0
-        frequencies[token] += 1
-
-    for token in frequencies:
-        frequencies[token] = frequencies[token] / total
-
-    return frequencies
 
 def get_top_n_words(freq_dict: dict[str, float], top_n: int) -> Sequence[str] | None:
     """
@@ -212,17 +195,6 @@ def check_profile(profile: ProfileType) -> bool:
 
     return True
 
-    language, freq_dict, n_words = profile
-
-    return (
-        isinstance(language, str)
-        and isinstance(freq_dict, dict)
-        and isinstance(n_words, int)
-        and all(
-            isinstance(token, str) and isinstance(frequency, float)
-            for token, frequency in freq_dict.items()
-        )
-    )
 
 def compare_profiles_by_top_n(
     unknown_profile: ProfileType, profile_to_compare: ProfileType, top_n: int
@@ -310,17 +282,6 @@ def detect_language_by_top_n(
 
     return sorted_list[0]
 
-    coincide_coeff_1 = compare_profiles_by_top_n(unknown_profile, profile_1, top_n)
-    coincide_coeff_2 = compare_profiles_by_top_n(unknown_profile, profile_2, top_n)
-
-    if coincide_coeff_1 is None or coincide_coeff_2 is None:
-        return None
-
-    if coincide_coeff_1 > coincide_coeff_2:
-        return profile_1[0]
-    if coincide_coeff_1 < coincide_coeff_2:
-        return profile_2[0]
-    return min(profile_1[0], profile_2[0])
 
 # Mark 8
 
