@@ -78,7 +78,7 @@ def collect_frequencies(
     if not isinstance(end_of_word, str):
         return None
 
-    frequencies: dict[tuple[str, ...], int] = {}
+    frequencies = {}
 
     for raw_word in text.split():
         word = prepare_word(raw_word, start_of_word, end_of_word)
@@ -108,7 +108,7 @@ def count_tokens_pairs(
     if not isinstance(word_frequencies, dict):
         return None
 
-    pairs: dict[tuple[str, str], int] = {}
+    pairs = {}
 
     for word, frequency in word_frequencies.items():
         if not isinstance(word, tuple) or not isinstance(frequency, int):
@@ -150,8 +150,8 @@ def merge_tokens(
     ):
         return None
 
-    merged_token = pair[0] + pair[1]
-    result: dict[tuple[str, ...], int] = {}
+    merged_token = "".join(pair)
+    result = {}
 
     for word, frequency in word_frequencies.items():
         new_word: list[str] = []
