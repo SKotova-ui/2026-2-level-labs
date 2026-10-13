@@ -188,6 +188,33 @@ def train(
     In case of corrupt input arguments or functions used return None,
     None is returned
     """
+    if (
+        not isinstance(word_frequencies, dict)
+        or not isinstance(num_merges, int)
+        or isinstance(num_merges, bool)
+        or num_merges < 0
+    ):
+        return None
+
+    result = dict(word_frequencies)
+
+    for _ in range(num_merges):
+        pairs = count_tokens_pairs(result)
+
+        if pairs is None:
+            return None
+
+        if not pairs:
+            break
+
+        most_frequent_pair = max(pairs, key=pairs.get)
+
+        result = merge_tokens(result, most_frequent_pair)
+
+        if result is None:
+            return None
+
+    return result
 
 
 def get_vocabulary(
@@ -206,6 +233,29 @@ def get_vocabulary(
 
     In case of corrupt input arguments, None is returned
     """
+
+    if not isinstance(word_frequencies, dict):
+        return None
+
+    if not isinstance(unknown_token, str):
+        return None
+
+    vocabulary: dict[str, int] = {
+        unknown_token: 0
+    }
+
+    for word, frequency in word_frequencies.items():
+        if not isinstance(word, tuple) or not isinstance(frequency, int):
+            return None
+
+        for token in word:
+            if not isinstance(token, str):
+                return None
+
+            if token not in vocabulary:
+                vocabulary[token] = len(vocabulary)
+
+    return vocabulary
 
 
 def decode(
