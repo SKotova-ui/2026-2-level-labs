@@ -207,9 +207,14 @@ def train(
         if not pairs:
             break
 
-        most_frequent_pair = max(pairs, key=pairs.get)
+        merged_pair = min(pairs.items(), key=lambda item: (
+            -item[1],
+            -len(''.join(item[0])),
+            ''.join(item[0])
+        )
+        )[0]
 
-        result = merge_tokens(result, most_frequent_pair)
+        result = merge_tokens(result, merged_pair)
 
         if result is None:
             return None
