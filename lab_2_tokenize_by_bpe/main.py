@@ -158,7 +158,7 @@ def merge_tokens(
         i = 0
 
         while i < len(word):
-            if i < len(word) - 1 and (word[i], word[i + 1]) == pair:
+            if tuple(word[i:i + 2]) == pair:
                 new_word.append(merged_token)
                 i += 2
             else:
@@ -277,6 +277,43 @@ def decode(
 
     In case of corrupt input arguments, None is returned
     """
+
+    if encoded_text is None or vocabulary is None:
+        return None
+
+    if not isinstance(encoded_text, Sequence):
+        return None
+
+    if not isinstance(vocabulary, dict):
+        return None
+
+    if end_of_word_token is not None and not isinstance(end_of_word_token, str):
+        return None
+
+    reverse_vocab = {}
+    for token, token_id in vocabulary.items():
+        if not isinstance(token, str) or not isinstance(token_id, int):
+            return None
+        reverse_vocab[token_id] = token
+
+    result_tokens = []
+    for token_id in encoded_text:
+        if not isinstance(token_id, int):
+            return None
+        if token_id not in reverse_vocab:
+            return None
+        result_tokens.append(reverse_vocab[token_id])
+
+    if end_of_word_token is not None:
+        decoded = ""
+        for token in result_tokens:
+            if token == end_of_word_token:
+                decoded += " "
+            else:
+                decoded += token
+        return decoded.strip()
+    else:
+        return "".join(result_tokens)
 
 
 def tokenize_word(
