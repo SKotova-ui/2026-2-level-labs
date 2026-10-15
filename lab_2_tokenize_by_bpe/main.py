@@ -240,9 +240,8 @@ def get_vocabulary(
     if not isinstance(unknown_token, str):
         return None
 
-    vocabulary: dict[str, int] = {
-        unknown_token: 0
-    }
+    words = set()
+    characters = set()
 
     for word, frequency in word_frequencies.items():
         if not isinstance(word, tuple) or not isinstance(frequency, int):
@@ -252,11 +251,24 @@ def get_vocabulary(
             if not isinstance(token, str):
                 return None
 
-            if token not in vocabulary:
-                vocabulary[token] = len(vocabulary)
+            words.add(token)
+            characters.update(token)
+
+    vocabulary = {}
+
+    sorted_words = sorted(words, key=lambda w: (-len(w), w))
+
+    for word in sorted_words:
+        vocabulary[word] = len(vocabulary)
+
+    if unknown_token not in vocabulary:
+        vocabulary[unknown_token] = len(vocabulary)
+
+    for char in sorted(characters):
+        if char not in vocabulary:
+            vocabulary[char] = len(vocabulary)
 
     return vocabulary
-
 
 def decode(
     encoded_text: Sequence[int] | None,
