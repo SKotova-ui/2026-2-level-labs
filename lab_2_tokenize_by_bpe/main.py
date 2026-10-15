@@ -295,42 +295,30 @@ def decode(
     In case of corrupt input arguments, None is returned
     """
 
-    if encoded_text is None or vocabulary is None:
+    if (
+        not isinstance(encoded_text, Sequence)
+        or not encoded_text
+        or not isinstance(vocabulary, dict)
+        or (end_of_word_token is not None and not isinstance(end_of_word_token, str))
+    ):
         return None
 
-    if not isinstance(encoded_text, Sequence):
+    if not all(isinstance(i, int) for i in encoded_text):
         return None
-
-    if not isinstance(vocabulary, dict):
-        return None
-
-    if end_of_word_token is not None and not isinstance(end_of_word_token, str):
-        return None
-
-    reverse_vocab = {}
-    for token, token_id in vocabulary.items():
-        if not isinstance(token, str) or not isinstance(token_id, int):
+    for token, identif in vocabulary.items():
+        if not isinstance(identif, int) or isinstance(identif, bool):
             return None
-        reverse_vocab[token_id] = token
+        if not isinstance(token, str):
+            return None
 
-    result_tokens = []
-    for token_id in encoded_text:
-        if not isinstance(token_id, int):
-            return None
-        if token_id not in reverse_vocab:
-            return None
-        result_tokens.append(reverse_vocab[token_id])
+    reverse_vocabulary = {identif: token for token, identif in vocabulary.items()}
+    decoded_tokens = [reverse_vocabulary.get(identif) for identif in encoded_text]
+    decoded_text = "".join(decoded_tokens)
 
     if end_of_word_token is not None:
-        decoded = ""
-        for token in result_tokens:
-            if token == end_of_word_token:
-                decoded += " "
-            else:
-                decoded += token
-        return decoded.strip()
-    else:
-        return "".join(result_tokens)
+        decoded_text = decoded_text.replace(end_of_word_token, " ")
+
+    return decoded_text
 
 
 def tokenize_word(
