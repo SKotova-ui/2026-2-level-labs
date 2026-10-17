@@ -201,9 +201,6 @@ def train(
     for _ in range(num_merges):
         pairs = count_tokens_pairs(result)
 
-        if pairs is None:
-            return None
-
         if not pairs:
             break
 
@@ -263,15 +260,9 @@ def get_vocabulary(
 
     sorted_words = sorted(words, key=lambda w: (-len(w), w))
 
-    for word in sorted_words:
-        vocabulary[word] = len(vocabulary)
-
-    if unknown_token not in vocabulary:
-        vocabulary[unknown_token] = len(vocabulary)
-
-    for char in sorted(characters):
-        if char not in vocabulary:
-            vocabulary[char] = len(vocabulary)
+    for token in sorted_words + [unknown_token] + sorted(characters):
+        if token not in vocabulary:
+            vocabulary[token] = len(vocabulary)
 
     return vocabulary
 
