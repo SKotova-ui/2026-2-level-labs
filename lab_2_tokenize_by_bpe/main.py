@@ -242,27 +242,20 @@ def get_vocabulary(
     if not isinstance(unknown_token, str):
         return None
 
-    words = set()
-    characters = set()
-
-    for word, frequency in word_frequencies.items():
-        if not isinstance(word, tuple) or not isinstance(frequency, int):
-            return None
-
+    tokens = set()
+    for word in word_frequencies:
         for token in word:
-            if not isinstance(token, str):
-                return None
-
-            words.add(token)
-            characters.update(token)
+            tokens.add(token)
+            for char in token:
+                tokens.add(char)
+    tokens.add(unknown_token)
 
     vocabulary = {}
 
-    sorted_words = sorted(words, key=lambda w: (-len(w), w))
+    sorted_words = sorted(tokens, key=lambda w: (-len(w), w))
 
-    for token in sorted_words + [unknown_token] + sorted(characters):
-        if token not in vocabulary:
-            vocabulary[token] = len(vocabulary)
+    for i, key in enumerate(sorted_words):
+        vocabulary[key] = i
 
     return vocabulary
 
