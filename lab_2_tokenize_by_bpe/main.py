@@ -290,7 +290,7 @@ def decode(
     if not all(isinstance(i, int) for i in encoded_text):
         return None
     for token, identif in vocabulary.items():
-        if not isinstance(identif, int) or isinstance(identif, bool):
+        if not isinstance(identif, int):
             return None
         if not isinstance(token, str):
             return None
