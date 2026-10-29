@@ -45,30 +45,6 @@ def prepare_word(
 
     return tuple(tokens)
 
-    if not isinstance(raw_word, str):
-        return None
-
-    if start_of_word is not None and not isinstance(start_of_word, str):
-        return None
-
-    if end_of_word is not None and not isinstance(end_of_word, str):
-        return None
-
-    if not raw_word:
-        return None
-
-    result = []
-
-    if start_of_word is not None:
-        result.append(start_of_word)
-
-    result.extend(raw_word)
-
-    if end_of_word is not None:
-        result.append(end_of_word)
-
-    return tuple(result)
-
 
 def collect_frequencies(
     text: str, start_of_word: str | None, end_of_word: str
@@ -107,24 +83,6 @@ def collect_frequencies(
 
     return word_frequencies
 
-    if not isinstance(text, str):
-        return None
-
-    if start_of_word is not None and not isinstance(start_of_word, str):
-        return None
-
-    if not isinstance(end_of_word, str):
-        return None
-
-    frequencies = {}
-
-    for raw_word in text.split():
-        word = prepare_word(raw_word, start_of_word, end_of_word)
-        if word is None:
-            return None
-        frequencies[word] = frequencies.get(word, 0) + 1
-
-    return frequencies
 
 def count_tokens_pairs(
     word_frequencies: dict[tuple[str, ...], int],
@@ -216,36 +174,6 @@ def merge_tokens(
 
     return new_word_frequencies
 
-    if not isinstance(word_frequencies, dict):
-        return None
-
-    if (
-        not isinstance(pair, tuple)
-        or len(pair) != 2
-        or not isinstance(pair[0], str)
-        or not isinstance(pair[1], str)
-    ):
-        return None
-
-    merged_token = "".join(pair)
-    result = {}
-
-    for word, frequency in word_frequencies.items():
-        new_word: list[str] = []
-        i = 0
-
-        while i < len(word):
-            if tuple(word[i:i + 2]) == pair:
-                new_word.append(merged_token)
-                i += 2
-            else:
-                new_word.append(word[i])
-                i += 1
-
-        new_word_tuple = tuple(new_word)
-        result[new_word_tuple] = result.get(new_word_tuple, 0) + frequency
-
-    return result
 
 def train(
     word_frequencies: dict[tuple[str, ...], int] | None, num_merges: int
@@ -381,31 +309,6 @@ def decode(
     ]
 
     return "".join(decoded_symbols)
-
-    if (
-        not isinstance(encoded_text, Sequence)
-        or not encoded_text
-        or not isinstance(vocabulary, dict)
-        or (end_of_word_token is not None and not isinstance(end_of_word_token, str))
-    ):
-        return None
-
-    if not all(isinstance(i, int) for i in encoded_text):
-        return None
-    for token, identif in vocabulary.items():
-        if not isinstance(identif, int):
-            return None
-        if not isinstance(token, str):
-            return None
-
-    reverse_vocabulary = {identif: token for token, identif in vocabulary.items()}
-    decoded_tokens = [reverse_vocabulary.get(identif) for identif in encoded_text]
-    decoded_text = "".join(decoded_tokens)
-
-    if end_of_word_token is not None:
-        decoded_text = decoded_text.replace(end_of_word_token, " ")
-
-    return decoded_text
 
 
 def tokenize_word(
