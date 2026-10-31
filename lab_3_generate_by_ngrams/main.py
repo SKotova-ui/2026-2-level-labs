@@ -290,6 +290,32 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments, None is returned.
         In case text does not contain any words, None is returned.
         """
+        if not isinstance(text, str):
+            return None
+
+        tokens = []
+        word = []
+
+        for char in text:
+            if char.isalpha():
+                word.append(char)
+            elif char.isdigit():
+                continue
+            else:
+                if word:
+                    tokens.append("".join(word))
+                    word = []
+
+                if char in ".!?" and (
+                    not tokens or tokens[-1] != self._end_of_word_token
+                ):
+                    if tokens:
+                        tokens.append(self._end_of_word_token)
+
+        if word:
+            tokens.append("".join(word))
+
+        return tuple(tokens) if tokens else None
 
     def _put(self, element: str) -> None:
         """
@@ -300,6 +326,14 @@ class WordProcessor(TextProcessor):
 
         In case of corrupt input arguments, an element is not added to storage
         """
+        if not isinstance(element, str) or not element:
+            return
+
+        if element != self._end_of_word_token and not element.isalpha():
+            return
+
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
@@ -317,7 +351,32 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments, None is returned.
         In case decoded corpus does not contain any words, None is returned.
         """
+        if not isinstance(decoded_corpus, tuple):
+            return None
 
+        if not all(isinstance(token, str) for token in decoded_corpus):
+            return None
+
+        sentences = []
+        current_sentence = []
+
+        for token in decoded_corpus:
+            if token == self._end_of_word_token:
+                if current_sentence:
+                    sentence = " ".join(current_sentence)
+                    sentences.append(sentence[0].upper() + sentence[1:] + ".")
+                    current_sentence = []
+            else:
+                current_sentence.append(token)
+
+        if current_sentence:
+            sentence = " ".join(current_sentence)
+            sentences.append(sentence[0].upper() + sentence[1:] + ".")
+
+        if not sentences:
+            return None
+
+        return " ".join(sentences)
 
 class NGramLanguageModel:
     """
