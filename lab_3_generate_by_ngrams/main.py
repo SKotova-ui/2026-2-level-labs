@@ -171,7 +171,13 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        decoded = self._decode(encoded_corpus)
 
+        if decoded is None:
+            return None
+        
+        return self._postprocess_decoded_text(decoded)
+    
     def fill_from_ngrams(self, content: dict) -> None:
         """
         Fill internal storage with letters from external JSON.
@@ -179,6 +185,17 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+        if not isinstance(content, dict):
+            return
+
+        for ngram in content:
+            if not isinstance(ngram, str):
+                continue
+            tokens = self._tokenize(ngram)
+            if tokens is None:
+                continue
+            for token in tokens:
+                self._put(token)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -193,6 +210,15 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        decoded = []
+
+        for element_id in corpus:
+            token = self.get_token(element_id)
+            if token is None:
+               return None
+            decoded.append(token)
+
+        return tuple(decoded)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
@@ -209,7 +235,23 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(decoded_corpus, tuple):
+           return None
 
+        text = "".join(
+            " " if token == self._end_of_word_token else token
+            for token in decoded_corpus
+        )
+
+        text = " ".join(text.split())
+
+        if not text:
+            return None
+
+        text = text[0].upper() + text[1:]
+
+        if not text.endswith("."):
+            text += "."
 
 class WordProcessor(TextProcessor):
     """
