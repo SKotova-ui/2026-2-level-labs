@@ -53,9 +53,7 @@ class TextProcessor:
                 if i + 1 < len(text):
                     next_char = text[i + 1]
 
-                    if next_char.isspace() or (
-                        not next_char.isalnum() and not next_char.isspace()
-                    ):
+                    if not next_char.isalnum():
                         tokens.append(self._end_of_word_token)
 
         return tuple(tokens) if tokens else None
