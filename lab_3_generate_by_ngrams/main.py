@@ -41,6 +41,9 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str) or text is None:
+            return None
+
         tokens = []
 
         for i, char in enumerate(text):
@@ -120,6 +123,9 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str):
+            return None
+
         tokens = self._tokenize(text)
 
         if tokens is None:
@@ -171,6 +177,9 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(encoded_corpus, tuple[int, ...]) or encoded_corpus is None:
+            return None
+
         decoded = self._decode(encoded_corpus)
 
         if decoded is None:
@@ -210,6 +219,9 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(corpus, tuple[int, ...]) or corpus is None:
+            return None
+
         decoded = []
 
         for element_id in corpus:
@@ -252,6 +264,8 @@ class TextProcessor:
 
         if not text.endswith("."):
             text += "."
+
+        return text
 
 class WordProcessor(TextProcessor):
     """
