@@ -41,7 +41,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str) or text is None:
+        if not isinstance(text, str):
             return None
 
         tokens = []
@@ -175,7 +175,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(encoded_corpus, tuple[int, ...]) or encoded_corpus is None:
+        if not isinstance(encoded_corpus, tuple):
             return None
 
         decoded = self._decode(encoded_corpus)
@@ -217,7 +217,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(corpus, tuple[int, ...]) or corpus is None:
+        if not isinstance(corpus, tuple):
             return None
 
         decoded = []
