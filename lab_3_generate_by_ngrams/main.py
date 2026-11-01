@@ -396,6 +396,23 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        if (
+            not isinstance(n_gram_size, int)
+            or isinstance(n_gram_size, bool)
+            or n_gram_size <= 0
+        ):
+            self.__n_gram_size = 0
+        else:
+            self.__n_gram_size = n_gram_size
+
+        self._encoded_corpus = (
+            encoded_corpus
+            if isinstance(encoded_corpus, tuple)
+            else None
+        )
+
+        self._n_gram_frequencies = {}
+
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -404,6 +421,7 @@ class NGramLanguageModel:
         Returns:
             int: Size of stored n_grams
         """
+        return self.__n_gram_size
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -412,6 +430,11 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
+        if not isinstance(frequencies, dict):
+            return
+
+        self._n_gram_frequencies = frequencies.copy()
+
 
     def build(self) -> bool:
         """
