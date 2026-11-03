@@ -448,6 +448,22 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         False is returned
         """
+        if  self._encoded_corpus is None or self.__n_gram_size <= 0:
+            return False
+
+        n_grams = self._extract_n_grams(self._encoded_corpus)
+
+        if n_grams is None:
+            return False
+
+        frequencies = {}
+
+        for n_gram in n_grams:
+            frequencies[n_gram] = frequencies.get(n_gram, 0) + 1
+
+        self._n_gram_frequencies = frequencies
+
+        return True
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
