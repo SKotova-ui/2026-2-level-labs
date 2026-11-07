@@ -121,7 +121,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or text is None:
             return None
 
         tokens = self._tokenize(text)
@@ -175,7 +175,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(encoded_corpus, tuple):
+        if not isinstance(encoded_corpus, tuple) or encoded_corpus is None:
             return None
 
         decoded = self._decode(encoded_corpus)
@@ -192,7 +192,7 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict):
+        if not isinstance(content, dict) or content is None:
             return
 
         for ngram in content:
@@ -417,7 +417,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not isinstance(frequencies, dict):
+        if not isinstance(frequencies, dict) or frequencies is None:
             return
 
         self._n_gram_frequencies = frequencies
@@ -451,6 +451,8 @@ class NGramLanguageModel:
         self._n_gram_frequencies = frequencies
 
         return True
+
+    #вернуться и доделать
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
