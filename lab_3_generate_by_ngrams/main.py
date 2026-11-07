@@ -46,15 +46,15 @@ class TextProcessor:
 
         tokens = []
 
-        for i, char in enumerate(text):
-            if char.isalpha():
-                tokens.append(char)
-
-                if i + 1 < len(text):
-                    next_char = text[i + 1]
-
-                    if not next_char.isalnum():
-                        tokens.append(self._end_of_word_token)
+        for word in text.lower().split():
+            chars = [char for char in word if char.isalpha()]
+            if not chars:
+                continue
+            tokens.extend(chars)
+            tokens.append(self.end_of_word_token)
+            
+        if not tokens:
+            return None
 
         return tuple(tokens) if tokens else None
 
@@ -97,7 +97,7 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
-        if not isinstance(element_id, int) or isinstance(element_id, bool):
+        if not isinstance(element_id, int):
             return None
 
         for token, token_id in self._storage.items():
