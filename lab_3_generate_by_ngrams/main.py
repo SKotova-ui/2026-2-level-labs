@@ -52,9 +52,6 @@ class TextProcessor:
                 continue
             tokens.extend(chars)
             tokens.append(self.end_of_word_token)
-            
-        if not tokens:
-            return None
 
         return tuple(tokens) if tokens else None
 
