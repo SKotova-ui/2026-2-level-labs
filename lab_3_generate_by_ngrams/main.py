@@ -461,6 +461,34 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(sequence, tuple):
+            return None
+
+        if not all(
+            isinstance(token, int) and not isinstance(token, bool)
+            for token in sequence
+        ):
+            return None
+        if not isinstance(self.__n_gram_size, int):
+            return None
+
+        if self.__n_gram_size <= 0:
+            return None
+
+        n = self.__n_gram_size
+
+        if len(sequence) < n - 1:
+            return {}
+
+        context = sequence[-(n - 1):] if n > 1 else ()
+
+        next_tokens = {}
+
+        for n_gram, probability in self._n_gram_frequencies.items():
+            if n_gram[:-1] == context:
+                next_tokens[n_gram[-1]] = probability
+
+        return next_tokens
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -477,6 +505,28 @@ class NGramLanguageModel:
         In case of corrupt input arguments, None is returned
         """
 
+        if not isinstance(encoded_corpus, tuple):
+            return None
+        if not isinstance(self.__n_gram_size, int):
+            return None
+        if self.__n_gram_size <= 0:
+            return None
+        if not all(
+            isinstance(token, int) and not isinstance(token, bool)
+            for token in encoded_corpus
+        ):
+            return None
+
+        n = self.__n_gram_size
+
+        if len(encoded_corpus) < n:
+            return ()
+
+        return tuple(
+            encoded_corpus[i:i + n]
+            for i in range(len(encoded_corpus) - n + 1)
+        )
+ 
 
 class GreedyTextGenerator:
     """
