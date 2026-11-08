@@ -474,7 +474,8 @@ class NGramLanguageModel:
         """
         if not isinstance(sequence, tuple):
             return None
-
+        if not sequence:
+            return None
         if not all(
             isinstance(token, int) and not isinstance(token, bool)
             for token in sequence
@@ -482,7 +483,6 @@ class NGramLanguageModel:
             return None
         if not isinstance(self.__n_gram_size, int):
             return None
-
         if self.__n_gram_size <= 0:
             return None
 
@@ -517,6 +517,8 @@ class NGramLanguageModel:
         """
 
         if not isinstance(encoded_corpus, tuple):
+            return None
+        if not encoded_corpus:
             return None
         if not isinstance(self.__n_gram_size, int):
             return None
