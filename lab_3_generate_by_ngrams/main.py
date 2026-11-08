@@ -193,10 +193,15 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict) or content is None:
+        if not isinstance(content, dict):
             return
 
-        for ngram in content:
+        ngrams = content.get("freq")
+
+        if not isinstance(ngrams, dict):
+            return
+
+        for ngram in ngrams:
             if not isinstance(ngram, str):
                 continue
             tokens = self._tokenize(ngram)
@@ -218,7 +223,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(corpus, tuple):
+        if not isinstance(corpus, tuple) or not corpus:
             return None
 
         decoded = []
