@@ -41,7 +41,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or text is None:
             return None
 
         tokens = []
@@ -68,7 +68,7 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
-        if not isinstance(element, str):
+        if not isinstance(element, str) or element is None:
             return None
         return self._storage.get(element)
 
@@ -94,7 +94,7 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
-        if not isinstance(element_id, int):
+        if not isinstance(element_id, int) or element_id is None:
             return None
 
         for token, token_id in self._storage.items():
