@@ -449,8 +449,6 @@ class NGramLanguageModel:
 
         return True
 
-    #вернуться и доделать
-
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
         Retrieve tokens that can continue the given sequence along with their probabilities.
