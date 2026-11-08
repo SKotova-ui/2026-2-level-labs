@@ -46,6 +46,8 @@ class TextProcessor:
         if not isinstance(text, str) or text is None:
             return None
 
+        end_of_word_token = self.get_end_of_word_token()
+
         tokens = []
 
         for word in text.lower().split():
@@ -53,7 +55,7 @@ class TextProcessor:
             if not chars:
                 continue
             tokens.extend(chars)
-            tokens.append(self.end_of_word_token)
+            tokens.append(end_of_word_token)
 
         return tuple(tokens) if tokens else None
 
