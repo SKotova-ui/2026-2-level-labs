@@ -23,6 +23,8 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
+        self._end_of_word_token = end_of_word_token
+        self._storage = {end_of_word_token: 0}
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -545,6 +547,8 @@ class GreedyTextGenerator:
             language_model (NGramLanguageModel): A language model to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
+        self._model = language_model
+        self._text_processor = text_processor
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -560,6 +564,36 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+
+        if not isinstance(prompt, str) or not prompt:
+            return None
+        if not isinstance(seq_len, int) or seq_len <= 0:
+            return None
+
+        encoded = self._text_processor.encode(prompt)
+        if encoded is None:
+            return None
+
+        current = list(encoded)
+        for _ in range(seq_len):
+            possible_tokens = self._model.generate_next_token(tuple(current))
+            if not possible_tokens:
+                break
+
+            best_token = None
+            best_frequency = -1.0
+            for token, frequency in possible_tokens.items():
+                if frequency > best_frequency or (
+                    frequency == best_frequency
+                    and (best_token is None or token > best_token)
+                ):
+                    best_token = token
+                    best_frequency = frequency
+            if best_token is None:
+                break
+            current.append(best_token)
+
+        return self._text_processor.decode(tuple(current))
 
 
 class BeamSearcher:
