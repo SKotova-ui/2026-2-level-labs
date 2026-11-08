@@ -440,12 +440,12 @@ class NGramLanguageModel:
         if n_grams is None:
             return False
 
-        frequencies = {}
+        cut_n_gram = tuple(n_gram[:-1] for n_gram in n_grams)
 
         for n_gram in n_grams:
-            frequencies[n_gram] = frequencies.get(n_gram, 0) + 1
-
-        self._n_gram_frequencies = frequencies
+            if n_gram not in self._n_gram_frequencies:
+                frequency = n_grams.count(n_gram) / cut_n_gram.count(n_gram[:-1])
+                self._n_gram_frequencies[n_gram] = frequency
 
         return True
 
