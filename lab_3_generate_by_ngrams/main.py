@@ -576,8 +576,6 @@ class GreedyTextGenerator:
         None is returned
         """
 
-        if not isinstance(prompt, str) or not prompt:
-            return None
         if not isinstance(seq_len, int) or seq_len <= 0:
             return None
 
@@ -586,25 +584,21 @@ class GreedyTextGenerator:
             return None
 
         current = list(encoded)
+
         for _ in range(seq_len):
             possible_tokens = self._model.generate_next_token(tuple(current))
+
             if not possible_tokens:
                 break
 
-            best_token = None
-            best_frequency = -1.0
-            for token, frequency in possible_tokens.items():
-                if frequency > best_frequency or (
-                    frequency == best_frequency
-                    and (best_token is None or token > best_token)
-                ):
-                    best_token = token
-                    best_frequency = frequency
-            if best_token is None:
-                break
+            best_token = max(
+                possible_tokens,
+                key=lambda token: (possible_tokens[token], token)
+            )
             current.append(best_token)
 
         return self._text_processor.decode(tuple(current))
+
 
 
 class BeamSearcher:
