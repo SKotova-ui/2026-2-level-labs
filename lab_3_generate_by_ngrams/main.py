@@ -317,8 +317,6 @@ class WordProcessor(TextProcessor):
                 if word:
                     tokens.append("".join(word))
                     word = []
-            else:
-                continue
 
         if word:
             tokens.append("".join(word))
@@ -472,13 +470,13 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(sequence, tuple):
-            return None
-        if not sequence:
-            return None
-        if not all(
-            isinstance(token, int) and not isinstance(token, bool)
-            for token in sequence
+        if not (
+            isinstance(sequence, tuple)
+            and sequence
+            and all(
+                isinstance(token, int) and not isinstance(token, bool)
+                for token in sequence
+            )
         ):
             return None
         if not isinstance(self.__n_gram_size, int):
@@ -486,12 +484,10 @@ class NGramLanguageModel:
         if self.__n_gram_size <= 0:
             return None
 
-        n = self.__n_gram_size
-
-        if len(sequence) < n - 1:
+        if len(sequence) < self.__n_gram_size - 1:
             return {}
 
-        context = sequence[-(n - 1):] if n > 1 else ()
+        context = sequence[-(self.__n_gram_size - 1):] if self.__n_gram_size > 1 else ()
 
         next_tokens = {}
 
@@ -516,13 +512,9 @@ class NGramLanguageModel:
         In case of corrupt input arguments, None is returned
         """
 
-        if not isinstance(encoded_corpus, tuple):
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
-        if not encoded_corpus:
-            return None
-        if not isinstance(self.__n_gram_size, int):
-            return None
-        if self.__n_gram_size <= 0:
+        if not isinstance(self.__n_gram_size, int) or self.__n_gram_size <= 0:
             return None
         if not all(
             isinstance(token, int) and not isinstance(token, bool)
@@ -530,14 +522,9 @@ class NGramLanguageModel:
         ):
             return None
 
-        n = self.__n_gram_size
-
-        if len(encoded_corpus) < n:
-            return ()
-
         return tuple(
-            encoded_corpus[i:i + n]
-            for i in range(len(encoded_corpus) - n + 1)
+            encoded_corpus[i:i + self.__n_gram_size]
+            for i in range(len(encoded_corpus) - self.__n_gram_size + 1)
         )
  
 
@@ -598,7 +585,6 @@ class GreedyTextGenerator:
             current.append(best_token)
 
         return self._text_processor.decode(tuple(current))
-
 
 
 class BeamSearcher:
