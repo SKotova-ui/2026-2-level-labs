@@ -193,7 +193,7 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict):
+        if not isinstance(content, dict) or content is None:
             return
 
         ngrams = content.get("freq")
