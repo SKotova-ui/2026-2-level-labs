@@ -304,20 +304,13 @@ class WordProcessor(TextProcessor):
 
         for char in text.lower():          
             if char.isalpha():
-                word.append(char)
-            elif char.isdigit():
-                continue                    
-            elif char in ".!?":
+                word.append(char)               
+            elif char in ".!?" or char.isspace():
                 if word:
                     tokens.append("".join(word))
                     word = []
-                if tokens and tokens[-1] != self._end_of_word_token:
+                if char in ".!?" and tokens and tokens[-1] != self._end_of_word_token:
                     tokens.append(self._end_of_word_token)
-            elif char.isspace():
-                if word:
-                    tokens.append("".join(word))
-                    word = []
-
         if word:
             tokens.append("".join(word))
 
