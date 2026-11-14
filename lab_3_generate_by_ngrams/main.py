@@ -72,7 +72,7 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
-        if not isinstance(element, str) or element is None:
+        if not isinstance(element, str) or not element:
             return None
         return self._storage.get(element)
 
@@ -98,7 +98,7 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
-        if not isinstance(element_id, int) or element_id is None:
+        if not isinstance(element_id, int) or not element_id:
             return None
 
         for token, token_id in self._storage.items():
@@ -122,7 +122,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str) or text is None:
+        if not isinstance(text, str) or not text:
             return None
 
         tokens = self._tokenize(text)
@@ -176,7 +176,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(encoded_corpus, tuple) or encoded_corpus is None:
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
 
         decoded = self._decode(encoded_corpus)
@@ -193,7 +193,7 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict) or content is None:
+        if not isinstance(content, dict) or not content:
             return
 
         ngrams = content.get("freq")
@@ -251,7 +251,7 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(decoded_corpus, tuple):
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
            return None
 
         text = "".join(
@@ -296,7 +296,7 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments, None is returned.
         In case text does not contain any words, None is returned.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or not text:
             return None
 
         tokens = []
@@ -350,7 +350,7 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments, None is returned.
         In case decoded corpus does not contain any words, None is returned.
         """
-        if not isinstance(decoded_corpus, tuple):
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
 
         if not all(isinstance(token, str) for token in decoded_corpus):
@@ -416,7 +416,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not isinstance(frequencies, dict) or frequencies is None:
+        if not isinstance(frequencies, dict) or not frequencies:
             return
 
         self._n_gram_frequencies = frequencies
