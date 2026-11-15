@@ -6,7 +6,6 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods
 
-
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
@@ -426,15 +425,13 @@ class NGramLanguageModel:
         """
         Fill attribute `_n_gram_frequencies` from encoded corpus.
 
-        Encoded corpus is stored in the attribute `_encoded_corpus`
-
         Returns:
-            bool: True if attribute is filled successfully, otherwise False
-
-        In case of corrupt input arguments or methods used return None,
-        False is returned
+            bool: True if attribute is filled successfully, otherwise False.
         """
-        if self._encoded_corpus is None or not isinstance(self._encoded_corpus, tuple):
+        if (
+            self._encoded_corpus is None
+            or not isinstance(self._encoded_corpus, tuple)
+        ):
             return False
 
         n_grams = self._extract_n_grams(self._encoded_corpus)
@@ -442,12 +439,21 @@ class NGramLanguageModel:
         if n_grams is None:
             return False
 
-        cut_n_gram = tuple(n_gram[:-1] for n_gram in n_grams)
+        n_gram_counts = {}
+        prefix_counts = {}
 
         for n_gram in n_grams:
-            if n_gram not in self._n_gram_frequencies:
-                frequency = n_grams.count(n_gram) / cut_n_gram.count(n_gram[:-1])
-                self._n_gram_frequencies[n_gram] = frequency
+            prefix = n_gram[:-1]
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+            prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
+
+        self._n_gram_frequencies = {}
+
+        for n_gram, count in n_gram_counts.items():
+            prefix = n_gram[:-1]
+            self._n_gram_frequencies[n_gram] = (
+                count / prefix_counts[prefix]
+            )
 
         return True
 
