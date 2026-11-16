@@ -201,13 +201,6 @@ class TextProcessor:
 
         return self._postprocess_decoded_text(decoded)
 
-        decoded = self._decode(encoded_corpus)
-
-        if decoded is None:
-            return None
-        
-        return self._postprocess_decoded_text(decoded)
-    
     def fill_from_ngrams(self, content: dict) -> None:
         """
         Fill internal storage with letters from external JSON.
@@ -290,22 +283,6 @@ class TextProcessor:
 
         return decoded_element.capitalize() + "."
 
-        text = "".join(
-            " " if token == self._end_of_word_token else token
-            for token in decoded_corpus
-        )
-
-        text = " ".join(text.split())
-
-        if not text:
-            return None
-
-        text = text[0].upper() + text[1:]
-
-        if not text.endswith("."):
-            text += "."
-
-        return text
 
 class WordProcessor(TextProcessor):
     """
@@ -407,29 +384,6 @@ class WordProcessor(TextProcessor):
 
         return f'{'. '.join(sentences)}.'
 
-        if not all(isinstance(token, str) for token in decoded_corpus):
-            return None
-
-        sentences = []
-        current_sentence = []
-
-        for token in decoded_corpus:
-            if token == self._end_of_word_token:
-                if current_sentence:
-                    sentence = " ".join(current_sentence)
-                    sentences.append(sentence[0].upper() + sentence[1:] + ".")
-                    current_sentence = []
-            else:
-                current_sentence.append(token)
-
-        if current_sentence:
-            sentence = " ".join(current_sentence)
-            sentences.append(sentence[0].upper() + sentence[1:] + ".")
-
-        if not sentences:
-            return None
-
-        return " ".join(sentences)
 
 class NGramLanguageModel:
     """
@@ -477,8 +431,13 @@ class NGramLanguageModel:
         """
         Fill attribute `_n_gram_frequencies` from encoded corpus.
 
+        Encoded corpus is stored in the attribute `_encoded_corpus`
+
         Returns:
-            bool: True if attribute is filled successfully, otherwise False.
+            bool: True if attribute is filled successfully, otherwise False
+
+        In case of corrupt input arguments or methods used return None,
+        False is returned
         """
         if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
             return False
@@ -565,21 +524,6 @@ class NGramLanguageModel:
 
         return tuple(n_grams)
 
-        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
-            return None
-        if not isinstance(self.__n_gram_size, int) or self.__n_gram_size <= 0:
-            return None
-        if not all(
-            isinstance(token, int) and not isinstance(token, bool)
-            for token in encoded_corpus
-        ):
-            return None
-
-        return tuple(
-            encoded_corpus[i:i + self.__n_gram_size]
-            for i in range(len(encoded_corpus) - self.__n_gram_size + 1)
-        )
- 
 
 class GreedyTextGenerator:
     """
@@ -634,27 +578,6 @@ class GreedyTextGenerator:
         generated_sequence = tuple(sequence)
 
         return self._text_processor.decode(generated_sequence)
-
-        if not isinstance(seq_len, int) or seq_len <= 0:
-            return None
-
-        encoded = self._text_processor.encode(prompt)
-        if encoded is None:
-            return None
-
-        current = list(encoded)
-
-        for _ in range(seq_len):
-            possible_tokens = self._model.generate_next_token(tuple(current))
-            if not possible_tokens:
-                break
-            best_token = max(
-                possible_tokens,
-                key=lambda token: (possible_tokens[token], token)
-            )
-            current.append(best_token)
-
-        return self._text_processor.decode(tuple(current))
 
 
 class BeamSearcher:

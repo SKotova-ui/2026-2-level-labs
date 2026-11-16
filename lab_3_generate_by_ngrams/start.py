@@ -121,8 +121,6 @@ def main() -> None:
     result = backoff_generated
     assert result
 
-    print("Generated text:", result)
-
 
 if __name__ == "__main__":
     main()
