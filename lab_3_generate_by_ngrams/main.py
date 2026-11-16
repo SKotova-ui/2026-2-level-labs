@@ -480,8 +480,6 @@ class NGramLanguageModel:
             return None
         if not isinstance(self.__n_gram_size, int):
             return None
-        if self.__n_gram_size <= 0:
-            return None
 
         if len(sequence) < self.__n_gram_size - 1:
             return {}
@@ -573,10 +571,8 @@ class GreedyTextGenerator:
 
         for _ in range(seq_len):
             possible_tokens = self._model.generate_next_token(tuple(current))
-
             if not possible_tokens:
                 break
-
             best_token = max(
                 possible_tokens,
                 key=lambda token: (possible_tokens[token], token)
